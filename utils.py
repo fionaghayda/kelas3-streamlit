@@ -1,25 +1,27 @@
 import streamlit as st
 
-# Mapping password sesuai halaman
-PASSWORDS = {
+# Daftar password berdasarkan jenis halaman
+passwords = {
     "nilai": "kelas3ku",
     "data": "kelas3ku",
-    "komentar": "ortu3ku",
-    "galeri": "ortu3ku"
+    "galeri": "galeriku",
+    "komentar": "komentarku"
 }
 
-def check_password(page: str) -> bool:
-    """Menampilkan form password untuk halaman tertentu."""
-    st.warning("🔒 Halaman ini dilindungi. Masukkan password untuk mengakses.")
-    with st.form(f"Login_{page}"):
-        password = st.text_input("Password", type="password")
-        submitted = st.form_submit_button("Login")
-        if submitted:
-            if password == PASSWORDS.get(page):
-                st.success("✅ Akses diterima.")
-                st.session_state[f"auth_{page}"] = True
-            else:
-                st.error("❌ Password salah.")
-                st.session_state[f"auth_{page}"] = False
+def check_password(page="nilai"):
+    def password_entered():
+        if st.session_state[f"password_correct_{page}"]:
+            return True
+        if st.session_state[f"password_{page}"] == passwords[page]:
+            st.session_state[f"password_correct_{page}"] = True
+            return True
+        else:
+            st.session_state[f"password_correct_{page}"] = False
+            return False
 
-    return st.session_state.get(f"auth_{page}", False)
+    if f"password_correct_{page}" not in st.session_state:
+        st.session_state[f"password_correct_{page}"] = False
+
+    if not st.session_state[f"password_correct_{page}"]:
+        st.text_input("Masukkan Password", type="password", key=f"password_{page}", on_change=password_entered)
+        st.stop()
