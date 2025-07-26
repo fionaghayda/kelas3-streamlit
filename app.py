@@ -37,8 +37,8 @@ st.markdown("""
             border: none;
             height: 2px;
             background-color: #005288;
-            margin-top: 0.3rem;
-            margin-bottom: 1.5rem;
+            margin-top: 0.1rem;
+            margin-bottom: 0.7rem;
         }
 
         .card {
