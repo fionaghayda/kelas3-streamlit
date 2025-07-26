@@ -1,38 +1,35 @@
 import streamlit as st
 
-PASSWORD_RINI = "kelas3ku"
-PASSWORD_TAMU = "galeriku"
+def check_teacher_password():
+    correct_password = "kelas3ku"
+    if "teacher_auth" not in st.session_state:
+        st.session_state.teacher_auth = False
 
-def check_password():
-    def password_entered():
-        if st.session_state["password_rini"] == PASSWORD_RINI:
-            st.session_state["rini_auth"] = True
+    if not st.session_state.teacher_auth:
+        password = st.text_input("🔐 Masukkan Password Bu Rini", type="password")
+        if password == correct_password:
+            st.session_state.teacher_auth = True
+            st.success("✅ Akses Diberikan")
+        elif password != "":
+            st.error("❌ Password salah")
+            return False
         else:
-            st.session_state["rini_auth"] = False
-            st.error("Password salah.")
-
-    if "rini_auth" not in st.session_state:
-        st.text_input("Masukkan Password Halaman", type="password", key="password_rini", on_change=password_entered)
-        return False
-    elif not st.session_state["rini_auth"]:
-        st.text_input("Masukkan Password Halaman", type="password", key="password_rini", on_change=password_entered)
-        return False
-    else:
-        return True
+            return False
+    return True
 
 def check_guest_password():
-    def password_entered():
-        if st.session_state["password_tamu"] == PASSWORD_TAMU:
-            st.session_state["tamu_auth"] = True
-        else:
-            st.session_state["tamu_auth"] = False
-            st.error("Password salah.")
+    correct_password = "orangtuaku"
+    if "guest_auth" not in st.session_state:
+        st.session_state.guest_auth = False
 
-    if "tamu_auth" not in st.session_state:
-        st.text_input("Masukkan Password Galeri/Komentar", type="password", key="password_tamu", on_change=password_entered)
-        return False
-    elif not st.session_state["tamu_auth"]:
-        st.text_input("Masukkan Password Galeri/Komentar", type="password", key="password_tamu", on_change=password_entered)
-        return False
-    else:
-        return True
+    if not st.session_state.guest_auth:
+        password = st.text_input("🔐 Masukkan Password Orang Tua/Guru", type="password")
+        if password == correct_password:
+            st.session_state.guest_auth = True
+            st.success("✅ Akses Diberikan")
+        elif password != "":
+            st.error("❌ Password salah")
+            return False
+        else:
+            return False
+    return True
