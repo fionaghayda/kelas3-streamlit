@@ -4,11 +4,31 @@ import pandas as pd
 
 st.set_page_config(page_title="Kelas 3 SDN Wonoplintahan 1", layout="wide")
 
+st.markdown("""
+    <style>
+        .main {
+            background-color: #f4f6f8;
+        }
+        .stSidebar {
+            background-color: #f0f2f6;
+        }
+        h1, h2, h3 {
+            color: #005288;
+        }
+    </style>
+""", unsafe_allow_html=True)
+
 st.title("📘 Dokumentasi Akademik Kelas 3")
 st.subheader("SDN Wonoplintahan 1 - Kecamatan Prambon, Sidoarjo")
 st.caption("Oleh: Ibu RINI KUS ENDANG, S.Pd")
 
-menu = st.sidebar.selectbox("Pilih Halaman", ["Beranda", "Informasi Umum", "Data Siswa (Privat)"])
+menu = st.sidebar.selectbox("Pilih Halaman", [
+    "Beranda", 
+    "Informasi Umum", 
+    "Data Siswa (Privat)", 
+    "Jadwal Pelajaran", 
+    "Rekap Nilai (Privat)"
+])
 
 if menu == "Beranda":
     st.header("Selamat datang di dokumentasi akademik kelas 3!")
@@ -21,7 +41,7 @@ elif menu == "Informasi Umum":
     st.header("📚 Informasi Umum")
     st.write("- Hari belajar: Senin - Jumat")
     st.write("- Jumlah siswa: 30 siswa")
-    st.write("- Tema Kurikulum Merdeka")
+    st.write("- Tema: Kurikulum Merdeka")
     st.write("- Kegiatan rutin: Upacara, Literasi Pagi, Jumat Bersih")
 
 elif menu == "Data Siswa (Privat)":
@@ -32,3 +52,23 @@ elif menu == "Data Siswa (Privat)":
             st.dataframe(df)
         except FileNotFoundError:
             st.error("File data siswa belum tersedia.")
+
+elif menu == "Jadwal Pelajaran":
+    st.header("📆 Jadwal Pelajaran")
+    data = {
+        "Hari": ["Senin", "Selasa", "Rabu", "Kamis", "Jumat"],
+        "Pelajaran 1": ["Matematika", "IPA", "Pendidikan Agama", "IPS", "PJOK"],
+        "Pelajaran 2": ["Bahasa Indonesia", "Seni Budaya", "Matematika", "Bahasa Jawa", "Literasi"],
+        "Pelajaran 3": ["PJOK", "Bahasa Indonesia", "Seni Tari", "Bahasa Inggris", "Bersih Kelas"],
+    }
+    df_jadwal = pd.DataFrame(data)
+    st.table(df_jadwal)
+
+elif menu == "Rekap Nilai (Privat)":
+    if check_password():
+        st.header("📊 Rekap Nilai Siswa")
+        try:
+            df_nilai = pd.read_csv("data/nilai.csv")
+            st.dataframe(df_nilai)
+        except FileNotFoundError:
+            st.error("File nilai.csv belum ditemukan.")
