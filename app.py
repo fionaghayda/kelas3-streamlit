@@ -40,7 +40,7 @@ if menu == "Beranda":
         yang bisa diakses oleh orang tua murid dan wali kelas.
     """)
 
-    st.subheader("📆 Jadwal Pelajaran Mingguan")
+    st.subheader("📆 Jadwal Pelajaran Kelas 3")
     data = {
         "Hari": ["Senin", "Selasa", "Rabu", "Kamis", "Jumat"],
         "Pelajaran 1": ["Matematika", "IPA", "Pendidikan Agama", "IPS", "PJOK"],
