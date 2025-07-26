@@ -1,6 +1,8 @@
 import streamlit as st
-from utils import check_password
+from utils import check_password, check_gallery_password, check_comment_password
 import pandas as pd
+from datetime import datetime
+import os
 
 # Konfigurasi halaman
 st.set_page_config(page_title="Kelas 3 SDN Wonoplintahan 1", layout="wide")
@@ -66,69 +68,133 @@ st.markdown("""
 """, unsafe_allow_html=True)
 
 # Header Halaman
-st.title("📘 Dokumentasi Akademik Kelas 3")
+st.title("\U0001F4D8 Dokumentasi Akademik Kelas 3")
 st.subheader("SDN Wonoplintahan 1 - Kecamatan Prambon, Sidoarjo")
-st.caption("🧑‍🏫 Oleh: Ibu RINI KUS ENDANG, S.Pd")
+st.caption("\U0001F9D1‍\U0001F3EB Oleh: Ibu RINI KUS ENDANG, S.Pd")
 st.markdown('<hr class="custom-line">', unsafe_allow_html=True)
 
 # Navigasi Sidebar
-menu = st.sidebar.selectbox("📂 Pilih Halaman", [
+menu = st.sidebar.selectbox("\U0001F4C2 Pilih Halaman", [
     "Beranda", 
     "Informasi Umum", 
+    "Galeri Foto", 
+    "Komentar Orang Tua",
     "Data Siswa (Privat)", 
     "Rekap Nilai (Privat)"
 ])
 
 # ================== HALAMAN BERANDA ==================
 if menu == "Beranda":
-    st.markdown("### 👋 Selamat Datang!")
+    st.markdown("### \U0001F44B Selamat Datang!")
     st.write("""
         Website ini dibuat untuk mendokumentasikan kegiatan pembelajaran dan informasi penting 
         yang bisa diakses oleh orang tua murid dan wali kelas.
     """)
 
     st.markdown("---")
-    st.markdown("### 📆 Jadwal Pelajaran Mingguan")
+    st.markdown("### \U0001F4C6 Jadwal Pelajaran Mingguan")
 
     try:
         df_jadwal = pd.read_csv("data/jadwal_pelajaran.csv")
         st.dataframe(df_jadwal, use_container_width=True)
     except FileNotFoundError:
-        st.warning("File jadwal_pelajaran.csv belum ditemukan di folder `data/`.")
+        st.warning("File jadwal_pelajaran.csv belum ditemukan di folder data/.")
 
 # ================== HALAMAN INFORMASI UMUM ==================
 elif menu == "Informasi Umum":
-    st.markdown("### 📘 Informasi Umum")
+    st.markdown("### \U0001F4D8 Informasi Umum")
     st.markdown("---")
 
     st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.write("- 🗓️ Hari belajar: Senin - Jumat")
-    st.write("- 👧👦 Jumlah siswa: 30 siswa")
-    st.write("- 🎓 Tema: Kurikulum Merdeka")
-    st.write("- 📌 Kegiatan rutin: Upacara, Literasi Pagi, Jumat Bersih")
+    st.write("- \U0001F5D3️ Hari belajar: Senin - Jumat")
+    st.write("- \U0001F467\U0001F466 Jumlah siswa: 30 siswa")
+    st.write("- \U0001F393 Tema: Kurikulum Merdeka")
+    st.write("- \U0001F4CC Kegiatan rutin: Upacara, Literasi Pagi, Jumat Bersih")
     st.markdown('</div>', unsafe_allow_html=True)
+
+# ================== HALAMAN GALERI FOTO ==================
+elif menu == "Galeri Foto":
+    if check_gallery_password():
+        st.markdown("### \U0001F5BC️ Galeri Foto")
+        st.markdown("---")
+
+        folder = "data/galeri"
+        os.makedirs(folder, exist_ok=True)
+
+        uploaded_file = st.file_uploader("Unggah foto kegiatan:", type=["jpg", "jpeg", "png"])
+        caption = st.text_input("Tambahkan caption untuk foto ini")
+
+        if uploaded_file:
+            filepath = os.path.join(folder, uploaded_file.name)
+            with open(filepath, "wb") as f:
+                f.write(uploaded_file.getbuffer())
+            with open("data/captions.csv", "a") as f:
+                f.write(f"{uploaded_file.name},{caption}\n")
+            st.success("\u2705 Foto berhasil diunggah!")
+
+        if os.path.exists(folder):
+            captions = {}
+            if os.path.exists("data/captions.csv"):
+                with open("data/captions.csv", "r") as f:
+                    for line in f:
+                        nama_file, teks = line.strip().split(",", 1)
+                        captions[nama_file] = teks
+
+            for file in os.listdir(folder):
+                if file.endswith(('.jpg', '.jpeg', '.png')):
+                    st.image(os.path.join(folder, file), width=500)
+                    st.caption(captions.get(file, ""))
+                    st.markdown("---")
+
+# ================== HALAMAN KOMENTAR ORANG TUA ==================
+elif menu == "Komentar Orang Tua":
+    if check_comment_password():
+        st.markdown("### \U0001F4AC Komentar dan Usulan Orang Tua")
+        st.markdown("---")
+
+        komentar_file = "data/komentar.csv"
+        nama = st.text_input("Nama Orang Tua")
+        komentar = st.text_area("Komentar atau Usulan")
+
+        if st.button("Kirim Komentar"):
+            if nama and komentar:
+                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                df_komen = pd.DataFrame([[nama, komentar, timestamp]], columns=["nama", "komentar", "timestamp"])
+                if os.path.exists(komentar_file):
+                    df_komen.to_csv(komentar_file, mode='a', header=False, index=False)
+                else:
+                    df_komen.to_csv(komentar_file, index=False)
+                st.success("\u2705 Komentar berhasil dikirim!")
+            else:
+                st.warning("Harap isi nama dan komentar.")
+
+        if os.path.exists(komentar_file):
+            st.markdown("#### \U0001F5D2️ Komentar Terkirim:")
+            df_all = pd.read_csv(komentar_file)
+            for _, row in df_all.iterrows():
+                st.write(f"\U0001F552 {row['timestamp']} - \u270D️ {row['nama']}: {row['komentar']}")
 
 # ================== HALAMAN DATA SISWA ==================
 elif menu == "Data Siswa (Privat)":
     if check_password():
-        st.markdown("### 📋 Data Siswa (Privat)")
+        st.markdown("### \U0001F4CB Data Siswa (Privat)")
         st.markdown("---")
         try:
             df = pd.read_csv("data/siswa.csv")
             st.dataframe(df, use_container_width=True)
         except FileNotFoundError:
-            st.error("❌ File data siswa belum tersedia di folder `data/`.")
+            st.error("\u274C File data siswa belum tersedia di folder data/.")
 
 # ================== HALAMAN NILAI SISWA ==================
 elif menu == "Rekap Nilai (Privat)":
     if check_password():
-        st.markdown("### 📊 Rekap Nilai Siswa")
+        st.markdown("### \U0001F4CA Rekap Nilai Siswa")
         st.markdown("---")
         try:
             df_nilai = pd.read_csv("data/nilai.csv")
             st.dataframe(df_nilai, use_container_width=True)
         except FileNotFoundError:
-            st.error("❌ File nilai.csv belum ditemukan di folder `data/`.")
+            st.error("\u274C File nilai.csv belum ditemukan di folder data/.")
 
 # ================== FOOTER ==================
 st.markdown("""
