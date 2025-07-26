@@ -1,136 +1,78 @@
 import streamlit as st
-from utils import check_password
 import pandas as pd
 
 # Konfigurasi halaman
-st.set_page_config(page_title="Kelas 3 SDN Wonoplintahan 1", layout="wide")
+st.set_page_config(page_title="Dokumentasi Kelas 3", layout="wide")
 
-# Gaya tampilan CSS
+# CSS untuk dekorasi dan tata letak
 st.markdown("""
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Nunito&display=swap');
-
-        html, body, [class*="css"] {
-            font-family: 'Nunito', sans-serif;
+        .big-title {
+            font-size: 40px;
+            font-weight: 800;
+            margin-bottom: -10px;
         }
-
-        .main {
-            background-color: #f9fafb;
+        .sub-title {
+            font-size: 22px;
+            font-weight: 600;
+            color: #333333;
+            margin-bottom: 10px;
         }
-
-        h1, h2, h3 {
-            color: #005288;
-            margin-bottom: 0.4rem;
-            margin-top: 0.5rem;
-        }
-
-        .stSidebar {
-            background-color: #f0f2f6;
-        }
-
-        .block-container {
-            padding-top: 1rem;
-            padding-bottom: 1rem;
-        }
-
-        hr {
-            border: 1px solid #dee2e6;
-            margin-top: 1rem;
-            margin-bottom: 1.5rem;
-        }
-
-        .card {
-            background-color: white;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.06);
-        }
-
-        .stCaption {
-            margin-top: -0.5rem;
-            font-size: 0.85rem;
-            color: #444;
-        }
-
-        .footer {
-            margin-top: 3rem;
-            padding-top: 1rem;
-            font-size: 0.8rem;
-            text-align: center;
+        .author {
+            font-size: 16px;
             color: gray;
+            margin-bottom: 10px;
+        }
+        .top-line {
+            border-top: 4px solid #f39c12;
+            margin-top: -30px;
+            margin-bottom: 15px;
+        }
+        .divider {
+            border-top: 1px solid #ddd;
+            margin-top: 25px;
+            margin-bottom: 15px;
+        }
+        .section-title {
+            font-size: 28px;
+            font-weight: bold;
+            margin-bottom: 5px;
+            color: #2c3e50;
+        }
+        .emoji {
+            font-size: 32px;
+            margin-right: 10px;
         }
     </style>
 """, unsafe_allow_html=True)
 
-# Header Halaman
-st.title("📘 Dokumentasi Akademik Kelas 3")
-st.subheader("SDN Wonoplintahan 1 - Kecamatan Prambon, Sidoarjo")
-st.caption("🧑‍🏫 Oleh: Ibu RINI KUS ENDANG, S.Pd")
-st.markdown("<hr>", unsafe_allow_html=True)
+# Header Utama
+st.markdown('<div class="top-line"></div>', unsafe_allow_html=True)
+st.markdown('<div class="big-title">📘 Dokumentasi Akademik Kelas 3</div>', unsafe_allow_html=True)
+st.markdown('<div class="sub-title">SDN Wonoplintahan 1 - Kecamatan Prambon, Sidoarjo</div>', unsafe_allow_html=True)
+st.markdown('<div class="author">👩‍🏫 Oleh: Ibu RINI KUS ENDANG, S.Pd</div>', unsafe_allow_html=True)
 
-# Navigasi Sidebar
-menu = st.sidebar.selectbox("📂 Pilih Halaman", [
-    "Beranda", 
-    "Informasi Umum", 
-    "Data Siswa (Privat)", 
-    "Rekap Nilai (Privat)"
-])
+# Garis pemisah
+st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
-# ================== HALAMAN BERANDA ==================
-if menu == "Beranda":
-    st.markdown("### 👋 Selamat Datang!")
-    st.write("""
-        Website ini dibuat untuk mendokumentasikan kegiatan pembelajaran dan informasi penting 
-        yang bisa diakses oleh orang tua murid dan wali kelas.
-    """)
+# Seksi Selamat Datang
+st.markdown('<div class="section-title">👋 Selamat Datang!</div>', unsafe_allow_html=True)
+st.write("Website ini dibuat untuk mendokumentasikan kegiatan pembelajaran dan informasi penting yang bisa diakses oleh orang tua murid dan wali kelas.")
 
-    st.markdown("---")
-    st.markdown("### 📆 Jadwal Pelajaran Mingguan")
+# Garis pemisah
+st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
 
-    try:
-        df_jadwal = pd.read_csv("data/jadwal_pelajaran.csv")
-        st.dataframe(df_jadwal, use_container_width=True)
-    except FileNotFoundError:
-        st.warning("File jadwal_pelajaran.csv belum ditemukan di folder `data/`.")
+# Jadwal Pelajaran
+st.markdown('<div class="section-title">📅 Jadwal Pelajaran Mingguan</div>', unsafe_allow_html=True)
 
-# ================== HALAMAN INFORMASI UMUM ==================
-elif menu == "Informasi Umum":
-    st.markdown("### 📘 Informasi Umum")
-    st.markdown("---")
+try:
+    jadwal = pd.read_csv("https://raw.githubusercontent.com/cklothoz79/kelas3-streamlit/main/data/jadwal_pelajaran.csv")
+    for hari in jadwal['Hari'].unique():
+        st.subheader(f"📖 {hari}")
+        df_hari = jadwal[jadwal['Hari'] == hari].drop(columns=["Hari"])
+        st.dataframe(df_hari, hide_index=True, use_container_width=True)
+except Exception as e:
+    st.error("Tidak dapat memuat data jadwal. Pastikan file `jadwal_pelajaran.csv` ada di folder `/data`.")
 
-    st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.write("- 🗓️ Hari belajar: Senin - Jumat")
-    st.write("- 👧👦 Jumlah siswa: 30 siswa")
-    st.write("- 🎓 Tema: Kurikulum Merdeka")
-    st.write("- 📌 Kegiatan rutin: Upacara, Literasi Pagi, Jumat Bersih")
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# ================== HALAMAN DATA SISWA ==================
-elif menu == "Data Siswa (Privat)":
-    if check_password():
-        st.markdown("### 📋 Data Siswa (Privat)")
-        st.markdown("---")
-        try:
-            df = pd.read_csv("data/siswa.csv")
-            st.dataframe(df, use_container_width=True)
-        except FileNotFoundError:
-            st.error("❌ File data siswa belum tersedia di folder `data/`.")
-
-# ================== HALAMAN NILAI SISWA ==================
-elif menu == "Rekap Nilai (Privat)":
-    if check_password():
-        st.markdown("### 📊 Rekap Nilai Siswa")
-        st.markdown("---")
-        try:
-            df_nilai = pd.read_csv("data/nilai.csv")
-            st.dataframe(df_nilai, use_container_width=True)
-        except FileNotFoundError:
-            st.error("❌ File nilai.csv belum ditemukan di folder `data/`.")
-
-# ================== FOOTER ==================
-st.markdown("""
-    <div class="footer">
-        © 2025 - Dokumentasi Kelas 3 SDN Wonoplintahan 1 | Dibuat oleh Ibu Rini Kus Endang, S.Pd
-    </div>
-""", unsafe_allow_html=True)
+# Garis pemisah akhir
+st.markdown('<div class="divider"></div>', unsafe_allow_html=True)
