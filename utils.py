@@ -1,59 +1,32 @@
+# File: utils.py
 import streamlit as st
+import hashlib
 
-# Fungsi autentikasi berdasarkan halaman
+def hash_password(password):
+    return hashlib.sha256(password.encode()).hexdigest()
 
-def check_password_kelas():
-    def password_entered():
-        if st.session_state["password_kelas"] == st.secrets["password_kelas"]:
-            st.session_state["password_correct_kelas"] = True
-            del st.session_state["password_kelas"]
-        else:
-            st.session_state["password_correct_kelas"] = False
+# Daftar password untuk setiap halaman privat
+PASSWORDS = {
+    "nilai": hash_password("kelas3ku"),
+    "data": hash_password("kelas3ku"),
+    "komentar": hash_password("ortu3ku"),
+    "galeri": hash_password("ortu3ku"),
+}
 
-    if "password_correct_kelas" not in st.session_state:
-        st.text_input(
-            "Masukkan password untuk akses Data Siswa dan Nilai:",
-            type="password",
-            on_change=password_entered,
-            key="password_kelas",
-        )
-        return False
-    elif not st.session_state["password_correct_kelas"]:
-        st.text_input(
-            "Masukkan password untuk akses Data Siswa dan Nilai:",
-            type="password",
-            on_change=password_entered,
-            key="password_kelas",
-        )
-        st.error("Password salah.")
-        return False
-    else:
-        return True
+# Fungsi pengecekan password berdasarkan halaman
+@st.cache_data(show_spinner=False)
+def check_password(page="data"):
+    if f"_authenticated_{page}" not in st.session_state:
+        st.session_state[f"_authenticated_{page}"] = False
 
-def check_password_galeri():
-    def password_entered():
-        if st.session_state["password_galeri"] == st.secrets["password_galeri"]:
-            st.session_state["password_correct_galeri"] = True
-            del st.session_state["password_galeri"]
-        else:
-            st.session_state["password_correct_galeri"] = False
-
-    if "password_correct_galeri" not in st.session_state:
-        st.text_input(
-            "Masukkan password untuk akses Galeri dan Komentar:",
-            type="password",
-            on_change=password_entered,
-            key="password_galeri",
-        )
-        return False
-    elif not st.session_state["password_correct_galeri"]:
-        st.text_input(
-            "Masukkan password untuk akses Galeri dan Komentar:",
-            type="password",
-            on_change=password_entered,
-            key="password_galeri",
-        )
-        st.error("Password salah.")
-        return False
-    else:
-        return True
+    if not st.session_state[f"_authenticated_{page}"]:
+        with st.form(f"Login_{page}"):
+            st.write(f"🔒 Halaman ini dilindungi. Masukkan password untuk mengakses.")
+            password = st.text_input("Password", type="password")
+            submitted = st.form_submit_button("Login")
+            if submitted:
+                if hash_password(password) == PASSWORDS.get(page):
+                    st.session_state[f"_authenticated_{page}"] = True
+                else:
+                    st.error("Password salah.")
+    return st.session_state[f"_authenticated_{page}"]
