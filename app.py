@@ -33,9 +33,15 @@ st.markdown("""
             padding-bottom: 1rem;
         }
 
+        .stCaption {
+            margin-bottom: 0.2rem;
+            font-size: 0.85rem;
+            color: #444;
+        }
+
         hr {
             border: 1px solid #dee2e6;
-            margin-top: 1rem;
+            margin-top: 0.3rem;
             margin-bottom: 1.5rem;
         }
 
@@ -45,12 +51,6 @@ st.markdown("""
             margin-bottom: 1.5rem;
             border-radius: 12px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.06);
-        }
-
-        .stCaption {
-            margin-top: -0.5rem;
-            font-size: 0.85rem;
-            color: #444;
         }
 
         .footer {
