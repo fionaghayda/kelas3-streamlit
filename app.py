@@ -21,7 +21,7 @@ if menu == "Beranda":
     st.header("Selamat Datang! 👋")
     st.markdown("""
     Aplikasi ini digunakan untuk mendokumentasikan kegiatan akademik kelas 3 SDN Wonoplintahan 1.
-    
+
     📌 Silakan pilih menu di samping untuk mengakses informasi.
 
     - **Nilai & Data**: hanya dapat diakses oleh Bu Rini.
