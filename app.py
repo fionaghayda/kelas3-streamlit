@@ -1,204 +1,126 @@
 import streamlit as st
-from utils import check_password, check_gallery_password, check_comment_password
 import pandas as pd
-from datetime import datetime
 import os
+import datetime
+from utils import check_password
 
 # Konfigurasi halaman
-st.set_page_config(page_title="Kelas 3 SDN Wonoplintahan 1", layout="wide")
+st.set_page_config(page_title="Dokumentasi Akademik Kelas 3", layout="wide")
 
-# Gaya tampilan CSS
+# Header utama
 st.markdown("""
-    <style>
-        @import url('https://fonts.googleapis.com/css2?family=Nunito&display=swap');
-
-        html, body, [class*="css"] {
-            font-family: 'Nunito', sans-serif;
-        }
-
-        .main {
-            background-color: #f9fafb;
-        }
-
-        h1, h2, h3 {
-            color: #005288;
-            margin-bottom: 0.4rem;
-            margin-top: 0.5rem;
-        }
-
-        .stSidebar {
-            background-color: #f0f2f6;
-        }
-
-        .block-container {
-            padding-top: 1rem;
-            padding-bottom: 1rem;
-        }
-
-        hr.custom-line {
-            border: none;
-            height: 2px;
-            background-color: #005288;
-            margin-top: 0.1rem;
-            margin-bottom: 0.1rem;
-        }
-
-        .card {
-            background-color: white;
-            padding: 1.5rem;
-            margin-bottom: 1.5rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.06);
-        }
-
-        .stCaption {
-            margin-top: -0.5rem;
-            font-size: 0.85rem;
-            color: #444;
-        }
-
-        .footer {
-            margin-top: 3rem;
-            padding-top: 1rem;
-            font-size: 0.8rem;
-            text-align: center;
-            color: gray;
-        }
-    </style>
+<div style='text-align: center;'>
+    <h1 style='margin-bottom: 5px;'>📘 Dokumentasi Akademik Kelas 3</h1>
+    <h4 style='margin-top: 0px;'>SDN Wonoplintahan 1 - Kecamatan Prambon, Sidoarjo</h4>
+    <h5>🧑‍🏫 Oleh: Ibu RINI KUS ENDANG, S.Pd</h5>
+    <hr style='border: 2px solid #000;'>
+</div>
 """, unsafe_allow_html=True)
 
-# Header Halaman
-st.title("\U0001F4D8 Dokumentasi Akademik Kelas 3")
-st.subheader("SDN Wonoplintahan 1 - Kecamatan Prambon, Sidoarjo")
-st.caption("\U0001F9D1‍\U0001F3EB Oleh: Ibu RINI KUS ENDANG, S.Pd")
-st.markdown('<hr class="custom-line">', unsafe_allow_html=True)
-
-# Navigasi Sidebar
-menu = st.sidebar.selectbox("\U0001F4C2 Pilih Halaman", [
-    "Beranda", 
-    "Informasi Umum", 
-    "Galeri Foto", 
+# Menu navigasi
+menu = st.sidebar.selectbox("Navigasi", [
+    "Beranda",
+    "Nilai Siswa",
+    "Jadwal Pelajaran",
+    "Data Siswa",
     "Komentar Orang Tua",
-    "Data Siswa (Privat)", 
-    "Rekap Nilai (Privat)"
+    "Galeri Foto"
 ])
 
-# ================== HALAMAN BERANDA ==================
+# Halaman Beranda
 if menu == "Beranda":
-    st.markdown("### \U0001F44B Selamat Datang!")
+    st.image("https://i.ibb.co/jz7xzzN/classroom.jpg", use_column_width=True)
     st.write("""
-        Website ini dibuat untuk mendokumentasikan kegiatan pembelajaran dan informasi penting 
-        yang bisa diakses oleh orang tua murid dan wali kelas.
+        Selamat datang di platform dokumentasi akademik untuk kelas 3 SDN Wonoplintahan 1.
+        Aplikasi ini dirancang untuk memudahkan guru dan orang tua dalam memantau perkembangan akademik siswa.
     """)
 
-    st.markdown("---")
-    st.markdown("### \U0001F4C6 Jadwal Pelajaran Mingguan")
+# Halaman Nilai
+elif menu == "Nilai Siswa":
+    if check_password("nilai"):
+        st.subheader("📊 Data Nilai Siswa")
+        try:
+            df = pd.read_csv("pages/data/nilai.csv")
+            st.dataframe(df, use_container_width=True)
+        except:
+            st.error("Gagal memuat data nilai.")
 
+# Halaman Jadwal
+elif menu == "Jadwal Pelajaran":
+    st.subheader("📅 Jadwal Pelajaran Kelas 3")
     try:
-        df_jadwal = pd.read_csv("data/jadwal_pelajaran.csv")
-        st.dataframe(df_jadwal, use_container_width=True)
-    except FileNotFoundError:
-        st.warning("File jadwal_pelajaran.csv belum ditemukan di folder data/.")
+        df = pd.read_csv("pages/data/jadwal_pelajaran.csv")
+        st.dataframe(df, use_container_width=True)
+    except:
+        st.error("Data jadwal tidak ditemukan.")
 
-# ================== HALAMAN INFORMASI UMUM ==================
-elif menu == "Informasi Umum":
-    st.markdown("### \U0001F4D8 Informasi Umum")
-    st.markdown("---")
+# Halaman Data Siswa
+elif menu == "Data Siswa":
+    if check_password("data"):
+        st.subheader("👨‍👩‍👧‍👦 Data Siswa")
+        try:
+            df = pd.read_csv("pages/data/data_siswa.csv")
+            st.dataframe(df, use_container_width=True)
+        except:
+            st.error("Data siswa tidak ditemukan.")
 
-    st.markdown('<div class="card">', unsafe_allow_html=True)
-    st.write("- \U0001F5D3️ Hari belajar: Senin - Jumat")
-    st.write("- \U0001F467\U0001F466 Jumlah siswa: 30 siswa")
-    st.write("- \U0001F393 Tema: Kurikulum Merdeka")
-    st.write("- \U0001F4CC Kegiatan rutin: Upacara, Literasi Pagi, Jumat Bersih")
-    st.markdown('</div>', unsafe_allow_html=True)
-
-# ================== HALAMAN GALERI FOTO ==================
-elif menu == "Galeri Foto":
-    if check_gallery_password():
-        st.markdown("### \U0001F5BC️ Galeri Foto")
-        st.markdown("---")
-
-        folder = "data/galeri"
-        os.makedirs(folder, exist_ok=True)
-
-        uploaded_file = st.file_uploader("Unggah foto kegiatan:", type=["jpg", "jpeg", "png"])
-        caption = st.text_input("Tambahkan caption untuk foto ini")
-
-        if uploaded_file:
-            filepath = os.path.join(folder, uploaded_file.name)
-            with open(filepath, "wb") as f:
-                f.write(uploaded_file.getbuffer())
-            with open("data/captions.csv", "a") as f:
-                f.write(f"{uploaded_file.name},{caption}\n")
-            st.success("\u2705 Foto berhasil diunggah!")
-
-        if os.path.exists(folder):
-            captions = {}
-            if os.path.exists("data/captions.csv"):
-                with open("data/captions.csv", "r") as f:
-                    for line in f:
-                        nama_file, teks = line.strip().split(",", 1)
-                        captions[nama_file] = teks
-
-            for file in os.listdir(folder):
-                if file.endswith(('.jpg', '.jpeg', '.png')):
-                    st.image(os.path.join(folder, file), width=500)
-                    st.caption(captions.get(file, ""))
-                    st.markdown("---")
-
-# ================== HALAMAN KOMENTAR ORANG TUA ==================
+# Halaman Komentar Orang Tua
 elif menu == "Komentar Orang Tua":
-    if check_comment_password():
-        st.markdown("### \U0001F4AC Komentar dan Usulan Orang Tua")
-        st.markdown("---")
-
-        komentar_file = "data/komentar.csv"
+    if check_password("komentar"):
+        st.subheader("💬 Komentar dan Usulan Orang Tua")
         nama = st.text_input("Nama Orang Tua")
         komentar = st.text_area("Komentar atau Usulan")
-
         if st.button("Kirim Komentar"):
             if nama and komentar:
-                timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                df_komen = pd.DataFrame([[nama, komentar, timestamp]], columns=["nama", "komentar", "timestamp"])
+                waktu = datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                komentar_file = "pages/data/komentar.csv"
                 if os.path.exists(komentar_file):
-                    df_komen.to_csv(komentar_file, mode='a', header=False, index=False)
+                    df = pd.read_csv(komentar_file)
                 else:
-                    df_komen.to_csv(komentar_file, index=False)
-                st.success("\u2705 Komentar berhasil dikirim!")
+                    df = pd.DataFrame(columns=["timestamp", "nama", "komentar"])
+                df.loc[len(df.index)] = [waktu, nama, komentar]
+                df.to_csv(komentar_file, index=False)
+                st.success("Komentar berhasil dikirim!")
             else:
-                st.warning("Harap isi nama dan komentar.")
+                st.warning("Isi semua kolom terlebih dahulu.")
 
-        if os.path.exists(komentar_file):
-            st.markdown("#### \U0001F5D2️ Komentar Terkirim:")
-            df_all = pd.read_csv(komentar_file)
-            for _, row in df_all.iterrows():
-                st.write(f"\U0001F552 {row['timestamp']} - \u270D️ {row['nama']}: {row['komentar']}")
-
-# ================== HALAMAN DATA SISWA ==================
-elif menu == "Data Siswa (Privat)":
-    if check_password():
-        st.markdown("### \U0001F4CB Data Siswa (Privat)")
-        st.markdown("---")
+        st.markdown("### 🗒️ Komentar Terkirim:")
         try:
-            df = pd.read_csv("data/siswa.csv")
-            st.dataframe(df, use_container_width=True)
-        except FileNotFoundError:
-            st.error("\u274C File data siswa belum tersedia di folder data/.")
+            df = pd.read_csv("pages/data/komentar.csv")
+            for _, row in df.iterrows():
+                st.write(f"🕒 {row['timestamp']} - ✍️ {row['nama']}: {row['komentar']}")
+        except:
+            st.info("Belum ada komentar.")
 
-# ================== HALAMAN NILAI SISWA ==================
-elif menu == "Rekap Nilai (Privat)":
-    if check_password():
-        st.markdown("### \U0001F4CA Rekap Nilai Siswa")
-        st.markdown("---")
-        try:
-            df_nilai = pd.read_csv("data/nilai.csv")
-            st.dataframe(df_nilai, use_container_width=True)
-        except FileNotFoundError:
-            st.error("\u274C File nilai.csv belum ditemukan di folder data/.")
+# Halaman Galeri Foto
+elif menu == "Galeri Foto":
+    if check_password("galeri"):
+        st.subheader("🖼️ Galeri Foto Kegiatan")
 
-# ================== FOOTER ==================
-st.markdown("""
-    <div class="footer">
-        © 2025 - Dokumentasi Kelas 3 SDN Wonoplintahan 1 | Dibuat oleh Ibu Rini Kus Endang, S.Pd
-    </div>
-""", unsafe_allow_html=True)
+        galeri_folder = "pages/data/galeri"
+        if not os.path.exists(galeri_folder):
+            os.makedirs(galeri_folder)
+
+        uploaded_file = st.file_uploader("Unggah Foto", type=["jpg", "jpeg", "png"])
+        caption = st.text_input("Caption Foto")
+        if st.button("Unggah"):
+            if uploaded_file and caption:
+                filepath = os.path.join(galeri_folder, uploaded_file.name)
+                with open(filepath, "wb") as f:
+                    f.write(uploaded_file.getbuffer())
+                with open(os.path.join(galeri_folder, "captions.txt"), "a") as f:
+                    f.write(f"{uploaded_file.name}|{caption}\n")
+                st.success("Foto berhasil diunggah.")
+            else:
+                st.warning("Lengkapi foto dan caption.")
+
+        st.markdown("### 📸 Foto Tersimpan:")
+        if os.path.exists(os.path.join(galeri_folder, "captions.txt")):
+            with open(os.path.join(galeri_folder, "captions.txt")) as f:
+                for line in f:
+                    filename, cap = line.strip().split("|", 1)
+                    path = os.path.join(galeri_folder, filename)
+                    if os.path.exists(path):
+                        st.image(path, caption=cap, use_column_width=True)
+        else:
+            st.info("Belum ada foto.")
