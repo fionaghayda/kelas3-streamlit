@@ -4,7 +4,7 @@ import pandas as pd
 
 st.set_page_config(page_title="Kelas 3 SDN Wonoplintahan 1", layout="wide")
 
-# Gaya sederhana
+# Gaya sederhana (disempurnakan untuk memperkecil jarak judul/subjudul)
 st.markdown("""
     <style>
         .main {
@@ -15,6 +15,17 @@ st.markdown("""
         }
         h1, h2, h3 {
             color: #005288;
+            margin-bottom: 0.4rem;
+            margin-top: 0.5rem;
+        }
+        .block-container {
+            padding-top: 1rem;
+            padding-bottom: 1rem;
+        }
+        .stCaption {
+            margin-top: -0.5rem;
+            font-size: 0.85rem;
+            color: #444;
         }
     </style>
 """, unsafe_allow_html=True)
