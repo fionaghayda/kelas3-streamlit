@@ -33,14 +33,10 @@ st.markdown("""
             padding-bottom: 1rem;
         }
 
-        .stCaption {
-            margin-bottom: 0.2rem;
-            font-size: 0.85rem;
-            color: #444;
-        }
-
-        hr {
-            border: 1px solid #dee2e6;
+        hr.custom-line {
+            border: none;
+            height: 2px;
+            background-color: #005288;
             margin-top: 0.3rem;
             margin-bottom: 1.5rem;
         }
@@ -51,6 +47,12 @@ st.markdown("""
             margin-bottom: 1.5rem;
             border-radius: 12px;
             box-shadow: 0 4px 8px rgba(0,0,0,0.06);
+        }
+
+        .stCaption {
+            margin-top: -0.5rem;
+            font-size: 0.85rem;
+            color: #444;
         }
 
         .footer {
@@ -67,7 +69,7 @@ st.markdown("""
 st.title("📘 Dokumentasi Akademik Kelas 3")
 st.subheader("SDN Wonoplintahan 1 - Kecamatan Prambon, Sidoarjo")
 st.caption("🧑‍🏫 Oleh: Ibu RINI KUS ENDANG, S.Pd")
-st.markdown("<hr>", unsafe_allow_html=True)
+st.markdown('<hr class="custom-line">', unsafe_allow_html=True)
 
 # Navigasi Sidebar
 menu = st.sidebar.selectbox("📂 Pilih Halaman", [
