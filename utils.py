@@ -1,55 +1,38 @@
-# === utils.py ===
 import streamlit as st
-from datetime import datetime
-import pandas as pd
-import os
 
-# Konfigurasi Password
-PASSWORD_NILAI = "kelas3ku"
-PASSWORD_ORTU = "ortu3ku"
+PASSWORD_RINI = "kelas3ku"
+PASSWORD_TAMU = "galeriku"
 
-# Fungsi Autentikasi
+def check_password():
+    def password_entered():
+        if st.session_state["password_rini"] == PASSWORD_RINI:
+            st.session_state["rini_auth"] = True
+        else:
+            st.session_state["rini_auth"] = False
+            st.error("Password salah.")
 
-def check_password(page):
-    if page == "nilai_data":
-        return _password_gate("password_nilai", PASSWORD_NILAI)
-    elif page == "galeri_komentar":
-        return _password_gate("password_ortu", PASSWORD_ORTU)
-    return False
-
-def _password_gate(key, valid_password):
-    if key not in st.session_state:
-        st.session_state[key] = ""
-
-    st.session_state[key] = st.text_input("Masukkan password:", type="password", key=f"input_{key}")
-    if st.session_state[key] == valid_password:
-        return True
-    else:
-        st.warning("Password salah atau belum diisi")
+    if "rini_auth" not in st.session_state:
+        st.text_input("Masukkan Password Halaman", type="password", key="password_rini", on_change=password_entered)
         return False
+    elif not st.session_state["rini_auth"]:
+        st.text_input("Masukkan Password Halaman", type="password", key="password_rini", on_change=password_entered)
+        return False
+    else:
+        return True
 
-# Fungsi Simpan Komentar
+def check_guest_password():
+    def password_entered():
+        if st.session_state["password_tamu"] == PASSWORD_TAMU:
+            st.session_state["tamu_auth"] = True
+        else:
+            st.session_state["tamu_auth"] = False
+            st.error("Password salah.")
 
-def simpan_komentar(nama, komentar, file_path="data/komentar.csv"):
-    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-    data = pd.DataFrame([[now, nama, komentar]], columns=["timestamp", "nama", "komentar"])
-    if os.path.exists(file_path):
-        lama = pd.read_csv(file_path)
-        data = pd.concat([lama, data], ignore_index=True)
-    data.to_csv(file_path, index=False)
-
-# Fungsi Simpan Foto Galeri
-
-def simpan_foto(file, caption, folder="data/galeri"):
-    os.makedirs(folder, exist_ok=True)
-    now = datetime.now().strftime("%Y%m%d%H%M%S")
-    filename = f"{now}_{file.name}"
-    filepath = os.path.join(folder, filename)
-    with open(filepath, "wb") as f:
-        f.write(file.getbuffer())
-
-    caption_path = os.path.join(folder, f"{filename}.txt")
-    with open(caption_path, "w", encoding="utf-8") as f:
-        f.write(caption)
-
-    return filepath
+    if "tamu_auth" not in st.session_state:
+        st.text_input("Masukkan Password Galeri/Komentar", type="password", key="password_tamu", on_change=password_entered)
+        return False
+    elif not st.session_state["tamu_auth"]:
+        st.text_input("Masukkan Password Galeri/Komentar", type="password", key="password_tamu", on_change=password_entered)
+        return False
+    else:
+        return True
