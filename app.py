@@ -38,7 +38,7 @@ st.markdown("""
             height: 2px;
             background-color: #005288;
             margin-top: 0.1rem;
-            margin-bottom: 0.1rem;
+            margin-bottom: 0.6rem;
         }
 
         .card {
@@ -62,14 +62,22 @@ st.markdown("""
             text-align: center;
             color: gray;
         }
+
+        .title-wrapper {
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid #005288;
+            margin-bottom: 1rem;
+        }
     </style>
 """, unsafe_allow_html=True)
 
 # Header Halaman
+st.markdown('<div class="title-wrapper">', unsafe_allow_html=True)
 st.title("📘 Dokumentasi Akademik Kelas 3")
 st.subheader("SDN Wonoplintahan 1 - Kecamatan Prambon, Sidoarjo")
 st.caption("🧑‍🏫 Oleh: Ibu RINI KUS ENDANG, S.Pd")
 st.markdown('<hr class="custom-line">', unsafe_allow_html=True)
+st.markdown('</div>', unsafe_allow_html=True)
 
 # Navigasi Sidebar
 menu = st.sidebar.selectbox("📂 Pilih Halaman", [
