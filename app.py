@@ -1,18 +1,24 @@
 import streamlit as st
-from utils import login_user, is_logged_in, get_user_role
+from utils import login_user, logout_user, get_session
 from pages.nilai import show_nilai_page
 from pages.galeri import show_galeri_page
 from pages.komentar import show_komentar_page
 
 st.set_page_config(page_title="Dokumentasi Akademik Kelas 3", layout="wide")
-login_user()
 
-if is_logged_in():
-    role = get_user_role()
+session = get_session()
 
-    st.title("📘 Dokumentasi Akademik Kelas 3")
-    st.write("SDN Wonoplintahan 1 - Kecamatan Prambon, Sidoarjo")
-    st.write("🧑‍🏫 Oleh: Ibu RINI KUS ENDANG, S.Pd")
+st.title("📘 Dokumentasi Akademik Kelas 3")
+st.write("SDN Wonoplintahan 1 - Kecamatan Prambon, Sidoarjo")
+st.write("🧑‍🏫 Oleh: Ibu RINI KUS ENDANG, S.Pd")
+
+if not session.get("logged_in", False):
+    login_user()
+else:
+    st.sidebar.write(f"👤 Login sebagai: {session['username']}")
+    if st.sidebar.button("Logout"):
+        logout_user()
+        st.experimental_rerun()
 
     menu = st.sidebar.selectbox("📂 Pilih Halaman", [
         "Beranda",
@@ -26,21 +32,18 @@ if is_logged_in():
         st.markdown("""
         Aplikasi ini digunakan untuk mendokumentasikan kegiatan akademik kelas 3 SDN Wonoplintahan 1.
 
-        📌 Silakan pilih menu di samping untuk mengakses informasi sesuai login Anda.
+        - **Nilai & Data**: hanya dapat diakses oleh Bu Rini.
+        - **Galeri & Komentar**: dapat diakses oleh orang tua dan guru.
         """)
 
     elif menu == "Nilai & Data":
-        if role == "guru":
+        if session['role'] == "guru":
             show_nilai_page()
         else:
-            st.warning("Halaman ini hanya bisa diakses oleh guru.")
+            st.error("🔒 Hanya Bu Rini yang bisa mengakses halaman ini.")
 
     elif menu == "Galeri":
-        if role in ["guru", "orangtua"]:
-            show_galeri_page()
+        show_galeri_page(session['role'])
 
     elif menu == "Komentar":
-        if role in ["guru", "orangtua"]:
-            show_komentar_page()
-else:
-    st.warning("Silakan login terlebih dahulu melalui sidebar.")
+        show_komentar_page(session['username'])
