@@ -1,35 +1,27 @@
 import streamlit as st
+import pandas as pd
 
-def check_teacher_password():
-    correct_password = "kelas3ku"
-    if "teacher_auth" not in st.session_state:
-        st.session_state.teacher_auth = False
+def login_user():
+    users_df = pd.read_csv("data/users.csv")
+    
+    with st.sidebar:
+        st.subheader("🔐 Login Pengguna")
+        username = st.text_input("Username")
+        password = st.text_input("Password", type="password")
+        login_btn = st.button("Login")
 
-    if not st.session_state.teacher_auth:
-        password = st.text_input("🔐 Masukkan Password Bu Rini", type="password")
-        if password == correct_password:
-            st.session_state.teacher_auth = True
-            st.success("✅ Akses Diberikan")
-        elif password != "":
-            st.error("❌ Password salah")
-            return False
+    if login_btn:
+        user = users_df[(users_df['username'] == username) & (users_df['password'] == password)]
+        if not user.empty:
+            st.session_state['login'] = True
+            st.session_state['username'] = user.iloc[0]['username']
+            st.session_state['role'] = user.iloc[0]['role']
+            st.success(f"Berhasil login sebagai {user.iloc[0]['role']}")
         else:
-            return False
-    return True
+            st.error("Username atau password salah!")
 
-def check_guest_password():
-    correct_password = "orangtuaku"
-    if "guest_auth" not in st.session_state:
-        st.session_state.guest_auth = False
+def is_logged_in():
+    return st.session_state.get("login", False)
 
-    if not st.session_state.guest_auth:
-        password = st.text_input("🔐 Masukkan Password Orang Tua/Guru", type="password")
-        if password == correct_password:
-            st.session_state.guest_auth = True
-            st.success("✅ Akses Diberikan")
-        elif password != "":
-            st.error("❌ Password salah")
-            return False
-        else:
-            return False
-    return True
+def get_user_role():
+    return st.session_state.get("role", None)
