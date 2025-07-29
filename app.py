@@ -1,63 +1,41 @@
 import streamlit as st
-import pandas as pd
-import os
+from utils import check_teacher_password, check_guest_password
+from pages.nilai import show_nilai_page
+from pages.galeri import show_galeri_page
+from pages.komentar import show_komentar_page
 
-DATA_FILE = "data/galeri.csv"
+st.set_page_config(page_title="Dokumentasi Akademik Kelas 3", layout="wide")
 
+st.title("📘 Dokumentasi Akademik Kelas 3")
+st.write("SDN Wonoplintahan 1 - Kecamatan Prambon, Sidoarjo")
+st.write("🧑‍🏫 Oleh: Ibu RINI KUS ENDANG, S.Pd")
 
-def load_data():
-    if os.path.exists(DATA_FILE):
-        return pd.read_csv(DATA_FILE)
-    return pd.DataFrame(columns=["Tanggal", "Deskripsi", "Gambar"])
+menu = st.sidebar.selectbox("📂 Pilih Halaman", [
+    "Beranda",
+    "Nilai & Data",
+    "Galeri",
+    "Komentar"
+])
 
+if menu == "Beranda":
+    st.header("Selamat Datang! 👋")
+    st.markdown("""
+    Aplikasi ini digunakan untuk mendokumentasikan kegiatan akademik kelas 3 SDN Wonoplintahan 1.
 
-def save_data(df):
-    df.to_csv(DATA_FILE, index=False)
+    📌 Silakan pilih menu di samping untuk mengakses informasi.
 
+    - **Nilai & Data**: hanya dapat diakses oleh Bu Rini.
+    - **Galeri & Komentar**: dapat diakses oleh orang tua dan guru.
+    """)
 
-def show_galeri_page():
-    st.header("📷 Galeri Kegiatan")
-    df = load_data()
+elif menu == "Nilai & Data":
+    if check_teacher_password():
+        show_nilai_page()
 
-    # Tambah Galeri Baru
-    st.subheader("Tambah Foto Galeri Baru")
-    with st.form("Tambah Galeri"):
-        tanggal = st.date_input("Tanggal")
-        deskripsi = st.text_input("Deskripsi")
-        gambar = st.text_input("Nama File Gambar (di folder images)")
-        submitted = st.form_submit_button("Tambah")
-        if submitted:
-            new_data = pd.DataFrame([[tanggal, deskripsi, gambar]], columns=["Tanggal", "Deskripsi", "Gambar"])
-            df = pd.concat([df, new_data], ignore_index=True)
-            save_data(df)
-            st.success("Foto galeri berhasil ditambahkan!")
+elif menu == "Galeri":
+    if check_guest_password():
+        show_galeri_page()
 
-    st.markdown("---")
-
-    # Tampilkan dan Edit Galeri
-    st.subheader("🖼️ Daftar Galeri")
-    for i, row in df.iterrows():
-        col1, col2 = st.columns([3, 1])
-        with col1:
-            st.markdown(f"**{row['Tanggal']}** - {row['Deskripsi']}")
-            if row['Gambar']:
-                st.image(f"images/{row['Gambar']}", width=300)
-        with col2:
-            if st.button("✏️ Edit", key=f"edit_{i}"):
-                with st.form(f"edit_form_{i}"):
-                    new_tanggal = st.date_input("Tanggal", value=pd.to_datetime(row['Tanggal']))
-                    new_deskripsi = st.text_input("Deskripsi", value=row['Deskripsi'])
-                    new_gambar = st.text_input("Nama File Gambar", value=row['Gambar'])
-                    update = st.form_submit_button("Update")
-                    if update:
-                        df.at[i, 'Tanggal'] = new_tanggal
-                        df.at[i, 'Deskripsi'] = new_deskripsi
-                        df.at[i, 'Gambar'] = new_gambar
-                        save_data(df)
-                        st.success("Galeri berhasil diperbarui.")
-                        st.experimental_rerun()
-            if st.button("🗑️ Hapus", key=f"hapus_{i}"):
-                df = df.drop(i).reset_index(drop=True)
-                save_data(df)
-                st.success("Galeri berhasil dihapus.")
-                st.experimental_rerun()
+elif menu == "Komentar":
+    if check_guest_password():
+        show_komentar_page()
