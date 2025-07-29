@@ -1,41 +1,46 @@
 import streamlit as st
-from utils import check_teacher_password, check_guest_password
+from utils import login_user, is_logged_in, get_user_role
 from pages.nilai import show_nilai_page
 from pages.galeri import show_galeri_page
 from pages.komentar import show_komentar_page
 
 st.set_page_config(page_title="Dokumentasi Akademik Kelas 3", layout="wide")
+login_user()
 
-st.title("📘 Dokumentasi Akademik Kelas 3")
-st.write("SDN Wonoplintahan 1 - Kecamatan Prambon, Sidoarjo")
-st.write("🧑‍🏫 Oleh: Ibu RINI KUS ENDANG, S.Pd")
+if is_logged_in():
+    role = get_user_role()
 
-menu = st.sidebar.selectbox("📂 Pilih Halaman", [
-    "Beranda",
-    "Nilai & Data",
-    "Galeri",
-    "Komentar"
-])
+    st.title("📘 Dokumentasi Akademik Kelas 3")
+    st.write("SDN Wonoplintahan 1 - Kecamatan Prambon, Sidoarjo")
+    st.write("🧑‍🏫 Oleh: Ibu RINI KUS ENDANG, S.Pd")
 
-if menu == "Beranda":
-    st.header("Selamat Datang! 👋")
-    st.markdown("""
-    Aplikasi ini digunakan untuk mendokumentasikan kegiatan akademik kelas 3 SDN Wonoplintahan 1.
+    menu = st.sidebar.selectbox("📂 Pilih Halaman", [
+        "Beranda",
+        "Nilai & Data",
+        "Galeri",
+        "Komentar"
+    ])
 
-    📌 Silakan pilih menu di samping untuk mengakses informasi.
+    if menu == "Beranda":
+        st.header("Selamat Datang! 👋")
+        st.markdown("""
+        Aplikasi ini digunakan untuk mendokumentasikan kegiatan akademik kelas 3 SDN Wonoplintahan 1.
 
-    - **Nilai & Data**: hanya dapat diakses oleh Bu Rini.
-    - **Galeri & Komentar**: dapat diakses oleh orang tua dan guru.
-    """)
+        📌 Silakan pilih menu di samping untuk mengakses informasi sesuai login Anda.
+        """)
 
-elif menu == "Nilai & Data":
-    if check_teacher_password():
-        show_nilai_page()
+    elif menu == "Nilai & Data":
+        if role == "guru":
+            show_nilai_page()
+        else:
+            st.warning("Halaman ini hanya bisa diakses oleh guru.")
 
-elif menu == "Galeri":
-    if check_guest_password():
-        show_galeri_page()
+    elif menu == "Galeri":
+        if role in ["guru", "orangtua"]:
+            show_galeri_page()
 
-elif menu == "Komentar":
-    if check_guest_password():
-        show_komentar_page()
+    elif menu == "Komentar":
+        if role in ["guru", "orangtua"]:
+            show_komentar_page()
+else:
+    st.warning("Silakan login terlebih dahulu melalui sidebar.")
